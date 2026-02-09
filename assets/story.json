@@ -137,7 +137,7 @@
       "text": "周边工厂都在裁员、关厂，你一时也找不到其他工作，只能继续等待、打零工维生，开始考虑回老家，像许多身边工友一样。"
     },
     "b1_start": {
-      "image": "/assets/images/b1_start.jpeg",
+      "image": "./assets/images/b1_start.jpeg",
       "choices": [
         {
           "effects": {
@@ -232,7 +232,7 @@
       "text": "你们集体去总部拦截CEO，通过公司微信群和协作工具搜集诉求、组织谈判，并持续直播和网络发声形成舆论攻势。最终拿回了本该属于自己的社保与赔偿金。案例来源：[极越汽车](https://mp.weixin.qq.com/s/gcWrpTdwa6nxHrc4sXMDDQ)"
     },
     "b2_start": {
-      "image": "/assets/images/b2_start.jpeg",
+      "image": "./assets/images/b2_start.jpeg",
       "choices": [
         {
           "label": "签署和解协议，另寻出路",
@@ -395,7 +395,7 @@
       "text": "你相当担心自己会因进一步行动被压更重KPI、被穿小鞋分走新询盘，甚至失去工作。你自有客户资源不多，跳槽单干不易，只能哑忍装没事，同时开始试图找下家。\n\n只是求职的确艰难，工资条月复一月扣除近500元“社保个人费用”，你从最初被克扣应得薪资的焦躁，渐渐转为麻木。\n\n案例来源：[企业扣员工个人社保费一年多不缴纳，灌南县相关部门持续跟进](https://news.qq.com/rain/a/20250724A031GO00)"
     },
     "b3_start": {
-      "image": "/assets/images/b3_start.jpg",
+      "image": "./assets/images/b3_start.jpg",
       "choices": [
         {
           "label": "投诉",
@@ -639,7 +639,7 @@
       "text": "你选择不继续工作。第二天下午台风过去后，你继续接单，发现系统降低了你的派单权重。"
     },
     "b4_start": {
-      "image": "/assets/images/b4_start.jpeg",
+      "image": "./assets/images/b4_start.jpeg",
       "choices": [
         {
           "effects": {
@@ -774,7 +774,7 @@
       "text": "\"包钢\"是个如雷贯耳的名字。包头钢铁（集团）有限责任公司成立于1954年，是国家“一五”期间建设的156个重点项目之一。你虽听说近年钢铁行业不景气、也听过包钢经营压力，但你仍觉得这类老牌企业“不会出什么问题”。\n\n不幸的是，发生了爆炸，你受伤了。\n\n案例来源：[mp.weixin](https://mp.weixin.qq.com/s/MyKXX-oY1q_9iJjFe-RFgA)"
     },
     "b5_start": {
-      "image": "/assets/images/b5_start.jpg",
+      "image": "./assets/images/b5_start.jpg",
       "choices": [
         {
           "label": "检验员（流水线成品检查）",
@@ -1041,7 +1041,7 @@
       "text": "你选择休息与恢复。"
     },
     "b6_guard": {
-      "image": "/assets/images/b6_guard.jpg",
+      "image": "./assets/images/b6_guard.jpg",
       "choices": [
         {
           "label": "我已了解，进入该支线",
@@ -1294,7 +1294,7 @@
       "text": "什么也不做，不平等权力关系下，及时止损不意味着软弱。\n\n活下来已经很了不起了。"
     },
     "b7_guard": {
-      "image": "/assets/images/b7_guard.jpg",
+      "image": "./assets/images/b7_guard.jpg",
       "choices": [
         {
           "label": "我已了解，进入该支线",
@@ -1717,7 +1717,7 @@
       "text": "讨薪过程中爆发暴力冲突，有工友受伤入院，医疗费成为新的负担。\n\n案例：[南昌男子讨薪不成反被对方车辆撞伤？警方：工友受轻伤，正调查处理（2024.10）](https://www.sohu.com/a/819587235_121284943)\n\n[河南夏邑“农民工讨薪遭毒打”当事人：讨要拉渣土工钱被打致伤（2022.12）](https://baijiahao.baidu.com/s?id=1753626328803233865)"
     },
     "b8_start": {
-      "image": "/assets/images/b8_start.jpeg",
+      "image": "./assets/images/b8_start.jpeg",
       "choices": [
         {
           "label": "打算忍下去",
