@@ -1,0 +1,284 @@
+:root {
+  --ease-main: cubic-bezier(0.22, 1, 0.36, 1);
+  --c-paper: #11141b;
+  --c-card: #222833;
+  --c-card2: #2b3442;
+  --c-ink: #eef3fb;
+  --c-soft: #c7d2e0;
+  --c-line: rgba(199, 210, 224, 0.28);
+  --c-accent: #6fd0bb;
+  --c-warn: #ff6f7f;
+}
+
+/* Tailwind CDN 偶发未命中时的兜底映射 */
+.bg-paper { background-color: var(--c-paper) !important; }
+.bg-card { background-color: var(--c-card) !important; }
+.bg-card2 { background-color: var(--c-card2) !important; }
+.text-ink { color: var(--c-ink) !important; }
+.text-soft { color: var(--c-soft) !important; }
+.border-line { border-color: var(--c-line) !important; }
+.text-accent { color: var(--c-accent) !important; }
+.border-accent { border-color: var(--c-accent) !important; }
+.text-warn { color: var(--c-warn) !important; }
+.border-warn { border-color: var(--c-warn) !important; }
+
+/* hover 变体兜底（仅常用） */
+.hover\:text-accent:hover { color: var(--c-accent) !important; }
+.hover\:border-accent\/60:hover { border-color: color-mix(in srgb, var(--c-accent) 60%, transparent) !important; }
+
+/* 保障主内容卡片不是透明 */
+main section {
+  background-clip: padding-box;
+}
+
+.text-soft {
+  color: var(--c-soft) !important;
+}
+
+body {
+  background-color: var(--c-paper);
+  color: var(--c-ink);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--c-ink);
+}
+
+p,
+li,
+span,
+button,
+label {
+  color: inherit;
+}
+
+.paper-bg {
+  background-image:
+    radial-gradient(circle at 12% -16%, rgba(111, 208, 187, 0.08), transparent 34%),
+    radial-gradient(circle at 94% 112%, rgba(135, 154, 182, 0.08), transparent 42%),
+    radial-gradient(circle at 58% 40%, rgba(255, 255, 255, 0.02), transparent 46%);
+}
+
+.start-cta {
+  box-shadow:
+    0 10px 20px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(111, 208, 187, 0.2);
+  transition: transform 180ms ease, box-shadow 200ms ease, border-color 180ms ease;
+}
+
+.start-cta:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(111, 208, 187, 0.36),
+    0 0 0 6px rgba(111, 208, 187, 0.08);
+}
+
+.start-cta:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.prose-custom {
+  color: var(--c-ink);
+  font-size: 1.08rem;
+  line-height: 1.95;
+}
+
+.prose-custom p {
+  margin: 0.86rem 0;
+  line-height: 1.96;
+}
+
+.prose-custom strong {
+  color: #f7fbff;
+  font-weight: 700;
+}
+
+.prose-custom em {
+  font-style: italic;
+}
+
+.prose-custom a {
+  text-decoration: none;
+}
+
+.prose-custom .story-link {
+  color: #84dec8;
+  border-bottom: 1px dashed rgba(111, 208, 187, 0.72);
+  background: rgba(111, 208, 187, 0.12);
+  transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
+  word-break: break-all;
+}
+
+.prose-custom .story-link::after {
+  content: "↗";
+  font-size: 0.74em;
+  margin-left: 0.2em;
+}
+
+.prose-custom .story-link:hover {
+  color: #9fe9d7;
+  border-bottom-color: rgba(159, 233, 215, 0.92);
+  background: rgba(111, 208, 187, 0.2);
+}
+
+.prose-custom .story-link-disabled {
+  color: #b8c3d1;
+  border-bottom-color: rgba(199, 210, 224, 0.42);
+  background: transparent;
+}
+
+.prose-custom .story-link-disabled::after {
+  content: "";
+}
+
+.scene-wrap {
+  overflow: hidden;
+}
+
+.scene {
+  position: relative;
+  transition: opacity 380ms var(--ease-main), transform 380ms var(--ease-main), filter 280ms var(--ease-main);
+}
+
+.scene-out {
+  opacity: 0;
+  transform: translateY(-6px);
+  filter: blur(0.4px);
+}
+
+.scene-in {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: sceneIn 560ms var(--ease-main) forwards;
+}
+
+@keyframes sceneIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.paper-sweep {
+  position: absolute;
+  inset: -12% -4%;
+  pointer-events: none;
+  background: rgba(237, 242, 251, 0.07);
+  transform: translateX(100%);
+  animation: sweep 520ms var(--ease-main) 60ms forwards;
+}
+
+@keyframes sweep {
+  to {
+    transform: translateX(-102%);
+  }
+}
+
+.story-image {
+  transform: rotate(0.2deg);
+  filter: saturate(0.86) contrast(1) brightness(0.88);
+}
+
+.scene-out .story-image {
+  transition: opacity 280ms var(--ease-main) 60ms;
+  opacity: 0;
+}
+
+.choice-btn:active {
+  transform: translateY(1px) scale(0.985);
+  opacity: 0.96;
+}
+
+.choice-btn {
+  will-change: transform, box-shadow, border-color, background-color;
+  transition:
+    transform 160ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.choice-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(111, 208, 187, 0.92);
+  background: rgba(111, 208, 187, 0.15);
+  box-shadow:
+    0 10px 18px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(111, 208, 187, 0.3),
+    0 0 0 4px rgba(111, 208, 187, 0.1);
+}
+
+.choice-btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(17, 20, 27, 0.95),
+    0 0 0 4px rgba(111, 208, 187, 0.72);
+}
+
+.choice-btn:disabled {
+  cursor: not-allowed;
+  color: #b9c5d4;
+  background: rgba(49, 59, 73, 0.72);
+  border-color: rgba(199, 210, 224, 0.28);
+  box-shadow: none;
+}
+
+/* 底部操作按钮（返回/重来）增强游戏化交互 */
+section button {
+  will-change: transform, box-shadow, border-color, background-color;
+  transition:
+    transform 150ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+section button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(111, 208, 187, 0.86);
+  background: rgba(111, 208, 187, 0.14);
+  box-shadow:
+    0 8px 14px rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(111, 208, 187, 0.28);
+}
+
+section button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.985);
+}
+
+.scene-in .choices-wrap > * {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: choiceIn 420ms var(--ease-main) forwards;
+}
+
+.scene-in .choices-wrap > *:nth-child(1) { animation-delay: 90ms; }
+.scene-in .choices-wrap > *:nth-child(2) { animation-delay: 170ms; }
+.scene-in .choices-wrap > *:nth-child(3) { animation-delay: 250ms; }
+.scene-in .choices-wrap > *:nth-child(4) { animation-delay: 330ms; }
+.scene-in .choices-wrap > *:nth-child(5) { animation-delay: 410ms; }
+
+@keyframes choiceIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ending-good {
+  background: rgba(111, 208, 187, 0.18);
+}
+
+.ending-bad {
+  background: rgba(255, 111, 127, 0.2);
+}
+
+.ending-neutral {
+  background: rgba(156, 176, 202, 0.16);
+}
