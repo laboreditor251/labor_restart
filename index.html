@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="《重生之我还是打工人》是一款以劳动者处境为主题的互动叙事新闻。通过多分支选择，体验欠薪、社保、工伤、裁员与维权中的现实约束与后果。" />
+    <meta name="description" content="《重生之我还是打工人》是一则以劳动者处境为主题的互动叙事新闻。通过多分支选择，体验欠薪、社保、工伤、裁员与维权中的现实约束与后果。" />
     <meta name="keywords" content="互动叙事,劳动者,劳动权益,维权,欠薪,社保,工伤,裁员,新闻游戏,分支剧情" />
     <meta name="author" content="labor_restart" />
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
@@ -13,15 +13,15 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="重生之我还是打工人" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:title" content="重生之我还是打工人（劳动处境模拟器）" />
+    <meta property="og:title" content="重生之我还是打工人" />
     <meta property="og:description" content="以劳动者为题的互动叙事新闻，读者在多分支现场中做选择，体验现实约束、风险与后果。" />
     <meta property="og:image" content="./assets/images/index.jpg" />
     <meta property="og:image:alt" content="重生之我还是打工人 项目封面图" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="重生之我还是打工人（劳动处境模拟器）" />
+    <meta name="twitter:title" content="重生之我还是打工人" />
     <meta name="twitter:description" content="以劳动者为题的互动叙事新闻，读者在多分支现场中做选择，体验现实约束、风险与后果。" />
     <meta name="twitter:image" content="./assets/images/index.jpg" />
-    <title>重生之我还是打工人（劳动处境模拟器）</title>
+    <title>重生之我还是打工人</title>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -212,6 +212,12 @@
           >
             Debug
           </button>
+          <button
+            class="inline-flex min-h-[52px] items-center rounded-[8px] border border-line bg-card2 px-6 py-3 font-sanscn text-base font-semibold text-ink transition hover:border-accent/60 hover:text-accent disabled:cursor-not-allowed disabled:opacity-40 md:min-h-[58px] md:px-7 md:text-lg"
+            @click="$store.game.toggleBgm()"
+          >
+            <span x-text="$store.game.bgmEnabled ? '音乐：开' : '音乐：关'"></span>
+          </button>
         </div>
 
         <div class="mt-4 flex flex-wrap items-center gap-3" x-show="$store.game.debugPanelOpen">
@@ -237,6 +243,7 @@
       </section>
     </main>
 
+    <audio id="bgm-player" loop preload="auto" src="./assets/audio/bgm.mp3"></audio>
     <script src="./assets/app.js"></script>
   </body>
 </html>
