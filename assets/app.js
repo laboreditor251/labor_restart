@@ -19,6 +19,8 @@
       hasAcknowledgedWarning: false,
       debugPanelOpen: false,
       debugNodeId: "pre_origin",
+      bgmEnabled: true,
+      bgmAudio: null,
 
       isTransitioning: false,
       transitionPhase: "idle",
@@ -37,6 +39,7 @@
 
       async loadStory() {
         try {
+          this.initBgm();
           let res = await fetch("./assets/story.json", { cache: "no-store" });
           if (!res.ok) {
             res = await fetch("/assets/story.json", { cache: "no-store" });
@@ -71,6 +74,7 @@
       acknowledgeWarning() {
         if (!this.story?.trigger_warning) return;
         this.hasAcknowledgedWarning = true;
+        this.tryPlayBgm();
       },
 
       warningToken() {
@@ -81,6 +85,7 @@
       },
 
       goTo(nodeId, choiceMeta) {
+        this.tryPlayBgm();
         if (!this.storyNodes[nodeId]) {
           console.warn("目标节点不存在:", nodeId);
           return;
@@ -512,6 +517,33 @@
         this.debugPanelOpen = !this.debugPanelOpen;
       },
 
+      initBgm() {
+        if (this.bgmAudio) return;
+        const el = document.getElementById("bgm-player");
+        if (!el) return;
+        this.bgmAudio = el;
+        this.bgmAudio.volume = 0.35;
+      },
+
+      tryPlayBgm() {
+        if (!this.bgmEnabled || !this.bgmAudio) return;
+        this.bgmAudio.play().catch((err) => {
+          console.warn("背景音乐播放失败:", err?.message || err);
+        });
+      },
+
+      toggleBgm() {
+        this.initBgm();
+        this.bgmEnabled = !this.bgmEnabled;
+        if (!this.bgmAudio) return;
+
+        if (this.bgmEnabled) {
+          this.tryPlayBgm();
+        } else {
+          this.bgmAudio.pause();
+        }
+      },
+
       getDebugNodes() {
         const ids = Object.keys(this.storyNodes || {});
         const picked = ids.filter((id) => /^b\d+_(start|guard)$/.test(id)).sort((a, b) =>
@@ -534,6 +566,7 @@
         this.currentNodeId = this.debugNodeId;
         this.currentNode = this.storyNodes[this.currentNodeId];
         this.hasAcknowledgedWarning = true;
+        this.tryPlayBgm();
         this.syncDisplays();
         this.persist();
         this.handleAutoRoute();
