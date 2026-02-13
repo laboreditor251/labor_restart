@@ -17,10 +17,13 @@
       showPath: false,
       fatalError: "",
       hasAcknowledgedWarning: false,
+      showTriggerWarning: false,
       debugPanelOpen: false,
       debugNodeId: "pre_origin",
       bgmEnabled: true,
       bgmAudio: null,
+      uiAudioCtx: null,
+      uiClickBound: false,
 
       isTransitioning: false,
       transitionPhase: "idle",
@@ -40,6 +43,7 @@
       async loadStory() {
         try {
           this.initBgm();
+          this.bindUiClickFx();
           let res = await fetch("./assets/story.json", { cache: "no-store" });
           if (!res.ok) {
             res = await fetch("/assets/story.json", { cache: "no-store" });
@@ -57,6 +61,7 @@
           this.storyNodes = story.nodes;
           // trigger warning / 导语确认仅在当前会话有效：刷新后回到首页重新显示
           this.hasAcknowledgedWarning = false;
+          this.showTriggerWarning = false;
           this.debugNodeId = this.getDebugNodes()[0]?.id || story.start;
 
           if (!this.restore()) {
@@ -73,6 +78,18 @@
 
       acknowledgeWarning() {
         if (!this.story?.trigger_warning) return;
+        this.hasAcknowledgedWarning = true;
+        this.showTriggerWarning = false;
+        this.tryPlayBgm();
+      },
+
+      startRebirth() {
+        if (!this.story) return;
+        if (this.story?.trigger_warning) {
+          this.showTriggerWarning = true;
+          this.hasAcknowledgedWarning = false;
+          return;
+        }
         this.hasAcknowledgedWarning = true;
         this.tryPlayBgm();
       },
@@ -470,6 +487,7 @@
 
         localStorage.removeItem(STORAGE_KEY);
         this.resetTransitionState();
+        this.showTriggerWarning = false;
         this.hasAcknowledgedWarning = preserveWarning && Boolean(this.story?.trigger_warning);
         this.state = this.cloneState(this.story.initial_state || {});
         this.history = [];
@@ -507,6 +525,17 @@
         if (!this.story) return;
         this.restart(false);
         this.hasAcknowledgedWarning = false;
+        this.showTriggerWarning = false;
+        this.debugPanelOpen = false;
+        if (typeof window !== "undefined") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      },
+
+      restartAfterEnding() {
+        if (!this.story) return;
+        this.restart(Boolean(this.story?.trigger_warning));
+        this.showTriggerWarning = false;
         this.debugPanelOpen = false;
         if (typeof window !== "undefined") {
           window.scrollTo({ top: 0, behavior: "smooth" });
@@ -515,6 +544,103 @@
 
       toggleDebugPanel() {
         this.debugPanelOpen = !this.debugPanelOpen;
+      },
+
+      bindUiClickFx() {
+        if (this.uiClickBound || typeof document === "undefined") return;
+        this.uiClickBound = true;
+        document.addEventListener(
+          "click",
+          (evt) => {
+            const btn = evt.target && evt.target.closest ? evt.target.closest("button") : null;
+            if (!btn || btn.disabled) return;
+            this.playUiClickFx();
+          },
+          true
+        );
+      },
+
+      initUiAudio() {
+        if (this.uiAudioCtx) return this.uiAudioCtx;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return null;
+        this.uiAudioCtx = new Ctx();
+        return this.uiAudioCtx;
+      },
+
+      playUiClickFx() {
+        const ctx = this.initUiAudio();
+        if (!ctx) return;
+        if (ctx.state === "suspended") {
+          ctx.resume().catch(() => {});
+        }
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const gain2 = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        const filter2 = ctx.createBiquadFilter();
+        const noiseSource = ctx.createBufferSource();
+        const noiseFilter = ctx.createBiquadFilter();
+        const noiseGain = ctx.createGain();
+
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(250, now);
+        osc.frequency.exponentialRampToValueAtTime(170, now + 0.06);
+
+        // Slightly detuned overtone for a less synthetic, more tactile timbre.
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(500, now);
+        osc2.frequency.exponentialRampToValueAtTime(340, now + 0.05);
+
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(1700, now);
+
+        filter2.type = "bandpass";
+        filter2.frequency.setValueAtTime(760, now);
+        filter2.Q.setValueAtTime(0.7, now);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.12, now + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+
+        gain2.gain.setValueAtTime(0.0001, now);
+        gain2.gain.exponentialRampToValueAtTime(0.05, now + 0.006);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+
+        const noiseBuffer = ctx.createBuffer(1, Math.max(1, Math.floor(ctx.sampleRate * 0.03)), ctx.sampleRate);
+        const noiseData = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < noiseData.length; i += 1) {
+          noiseData[i] = (Math.random() * 2 - 1) * 0.75;
+        }
+        noiseSource.buffer = noiseBuffer;
+
+        noiseFilter.type = "highpass";
+        noiseFilter.frequency.setValueAtTime(1800, now);
+
+        noiseGain.gain.setValueAtTime(0.0001, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.016, now + 0.0025);
+        noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.022);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        osc2.connect(filter2);
+        filter2.connect(gain2);
+        gain2.connect(ctx.destination);
+        noiseSource.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+
+        osc.start(now);
+        osc2.start(now);
+        noiseSource.start(now);
+
+        osc.stop(now + 0.095);
+        osc2.stop(now + 0.07);
+        noiseSource.stop(now + 0.03);
       },
 
       initBgm() {
