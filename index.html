@@ -72,14 +72,11 @@
     <main class="mx-auto w-full max-w-4xl px-4 py-8 md:px-6 md:py-10" x-data x-init="$store.game.loadStory()">
       <header class="mb-5 border-b border-line pb-3">
         <h1 class="text-[30px] leading-[1.24] font-semibold tracking-[0.01em] md:text-[52px]" x-text="$store.game.story?.title || 'YOUR_STORY_TITLE'"></h1>
-        <p class="mt-3 text-[13px] leading-7 text-soft">
-          免责声明：本作品为虚构的互动新闻式模拟体验，不对应任何真实人物或真实事件。
-        </p>
       </header>
 
       <section
         class="mt-4 rounded-[2px_6px_3px_5px] border border-line bg-card p-3 shadow-paper md:p-4"
-        x-show="$store.game.story?.trigger_warning && !$store.game.hasAcknowledgedWarning"
+        x-show="!$store.game.fatalError && !$store.game.hasAcknowledgedWarning && !$store.game.showTriggerWarning"
       >
         <img
           class="w-full max-h-[460px] rounded-[1px] border border-line object-cover shadow-photo"
@@ -90,15 +87,27 @@
 
       <section
         class="mt-4 rounded-[2px_6px_3px_5px] border border-line bg-card p-5 shadow-paper md:p-6"
-        x-show="$store.game.story?.intro && (!$store.game.story?.trigger_warning || !$store.game.hasAcknowledgedWarning)"
+        x-show="!$store.game.fatalError && !$store.game.hasAcknowledgedWarning && !$store.game.showTriggerWarning"
       >
-        <h2 class="mb-2 text-sm font-semibold tracking-[0.08em] text-soft">导语</h2>
-        <div class="prose-custom" x-html="$store.game.renderMarkdown($store.game.story?.intro || '')"></div>
+        <template x-if="$store.game.story?.intro">
+          <div>
+            <h2 class="mb-2 text-sm font-semibold tracking-[0.08em] text-soft">导语</h2>
+            <div class="prose-custom" x-html="$store.game.renderMarkdown($store.game.story?.intro || '')"></div>
+          </div>
+        </template>
+        <div class="mt-6 flex justify-center">
+          <button
+            class="start-cta inline-flex min-h-[66px] items-center justify-center rounded-[10px] border border-accent/70 bg-card2 px-12 py-4 font-sanscn text-xl font-semibold tracking-[0.03em] text-ink transition hover:border-accent hover:text-accent md:min-h-[74px] md:px-16 md:text-2xl"
+            @click="$store.game.startRebirth()"
+          >
+            开始重生
+          </button>
+        </div>
       </section>
 
       <section
         class="mt-4 rounded-[2px_6px_3px_5px] border border-line bg-card p-5 shadow-paper md:p-6"
-        x-show="$store.game.story?.trigger_warning && !$store.game.hasAcknowledgedWarning && !$store.game.fatalError"
+        x-show="$store.game.story?.trigger_warning && !$store.game.hasAcknowledgedWarning && $store.game.showTriggerWarning && !$store.game.fatalError"
       >
         <h2 class="mb-2 text-sm font-semibold tracking-[0.08em] text-soft">Trigger Warning</h2>
         <div class="prose-custom" x-html="$store.game.renderMarkdown($store.game.story?.trigger_warning || '')"></div>
@@ -107,7 +116,7 @@
             class="start-cta inline-flex min-h-[66px] items-center justify-center rounded-[10px] border border-accent/70 bg-card2 px-12 py-4 font-sanscn text-xl font-semibold tracking-[0.03em] text-ink transition hover:border-accent hover:text-accent md:min-h-[74px] md:px-16 md:text-2xl"
             @click="$store.game.acknowledgeWarning()"
           >
-            开始重生
+            我同意，进入故事
           </button>
         </div>
       </section>
@@ -140,20 +149,32 @@
                 />
               </template>
 
-              <div class="prose-custom" x-html="$store.game.renderMarkdown($store.game.currentNode.text || '')"></div>
+              <template x-if="!$store.game.currentNode.ending">
+                <div class="prose-custom" x-html="$store.game.renderMarkdown($store.game.currentNode.text || '')"></div>
+              </template>
 
               <template x-if="$store.game.currentNode.ending">
-                <div class="ending-card mt-4 rounded-[2px_4px_2px_4px] border border-line p-3" :class="$store.game.endingClass($store.game.currentNode.ending.type)">
-                  <h2 class="text-2xl font-semibold md:text-3xl" x-text="$store.game.currentNode.ending.title || '结局'"></h2>
-                  <p class="mt-2 text-lg leading-8 text-ink" x-html="$store.game.renderMarkdown($store.game.currentNode.ending.text || '')"></p>
-                  <div class="mt-5 flex flex-wrap gap-3">
+                <div>
+                  <div class="ending-shell mt-7 mb-7" :class="$store.game.endingClass($store.game.currentNode.ending.type)">
+                  <div class="ending-head">
+                    <h2 class="ending-title" x-text="$store.game.currentNode.ending.title || '结局'"></h2>
+                    <p class="mt-3 text-lg leading-8 text-ink" x-html="$store.game.renderMarkdown($store.game.currentNode.ending.text || '')"></p>
+                  </div>
+                  <div class="ending-body">
+                    <div class="prose-custom" x-html="$store.game.renderMarkdown($store.game.currentNode.text || '')"></div>
+                  </div>
+                  </div>
+                  <div class="ending-foot">
                     <button
-                      class="inline-flex min-h-[52px] items-center rounded-[8px] border border-accent/70 bg-card2 px-6 py-3 font-sanscn text-base font-semibold text-ink transition hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40 md:min-h-[58px] md:px-7 md:text-lg"
+                      class="ending-restart-btn"
                       :disabled="$store.game.isTransitioning"
-                      @click="$store.game.backToHome()"
+                      @click="$store.game.restartAfterEnding()"
                     >
                       重启人生
                     </button>
+                    <p class="ending-note">
+                      本互动新闻有9条角色情境、超过80个不同结局，欢迎继续探索。
+                    </p>
                   </div>
                 </div>
               </template>
@@ -187,33 +208,34 @@
       </section>
 
       <section
-        class="mt-4 rounded-[2px_6px_3px_5px] border border-line bg-card p-5 shadow-paper"
+        class="action-panel mt-4 rounded-[10px] border p-4 shadow-paper md:p-5"
         x-show="($store.game.hasAcknowledgedWarning || !$store.game.story?.trigger_warning) && !$store.game.currentNode?.ending"
       >
-        <div class="flex flex-wrap gap-3">
+        <div class="action-grid">
           <button
-            class="inline-flex min-h-[52px] items-center rounded-[8px] border border-line bg-card2 px-6 py-3 font-sanscn text-base font-semibold text-ink transition hover:border-accent/60 hover:text-accent disabled:cursor-not-allowed disabled:opacity-40 md:min-h-[58px] md:px-7 md:text-lg"
+            class="action-btn"
             :disabled="!$store.game.canUndo() || $store.game.isTransitioning || Boolean($store.game.currentNode?.ending)"
             @click="$store.game.undo()"
           >
             返回
           </button>
           <button
-            class="inline-flex min-h-[52px] items-center rounded-[8px] border border-line bg-card2 px-6 py-3 font-sanscn text-base font-semibold text-ink transition hover:border-accent/60 hover:text-accent disabled:cursor-not-allowed disabled:opacity-40 md:min-h-[58px] md:px-7 md:text-lg"
+            class="action-btn"
             :disabled="$store.game.isTransitioning"
             @click="$store.game.backToHome()"
           >
             重启人生
           </button>
           <button
-            class="inline-flex min-h-[52px] items-center rounded-[8px] border border-line bg-card2 px-6 py-3 font-sanscn text-base font-semibold text-ink transition hover:border-accent/60 hover:text-accent disabled:cursor-not-allowed disabled:opacity-40 md:min-h-[58px] md:px-7 md:text-lg"
+            class="action-btn action-btn-ghost"
             :disabled="$store.game.isTransitioning"
             @click="$store.game.toggleDebugPanel()"
           >
             Debug
           </button>
           <button
-            class="inline-flex min-h-[52px] items-center rounded-[8px] border border-line bg-card2 px-6 py-3 font-sanscn text-base font-semibold text-ink transition hover:border-accent/60 hover:text-accent disabled:cursor-not-allowed disabled:opacity-40 md:min-h-[58px] md:px-7 md:text-lg"
+            class="action-btn"
+            :class="$store.game.bgmEnabled ? 'action-btn-music-on' : 'action-btn-music-off'"
             @click="$store.game.toggleBgm()"
           >
             <span x-text="$store.game.bgmEnabled ? '音乐：开' : '音乐：关'"></span>
