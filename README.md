@@ -2,6 +2,8 @@
 
 以劳动者处境为题的互动叙事新闻。读者在多分支现场中做选择，体验现实约束、风险与后果，并可重复重开对比不同路径。
 
+[https://laboreditor251.github.io/labor_restart/](https://laboreditor251.github.io/labor_restart/)
+
 ## 技术栈
 - Nginx 静态托管
 - HTML + Alpine.js（CDN）
